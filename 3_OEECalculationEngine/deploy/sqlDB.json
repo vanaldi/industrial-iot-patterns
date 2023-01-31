@@ -33,7 +33,7 @@
       "type": "bool",
       "defaultValue": true,
       "metadata": {
-        "description": "Change the value to false to optout from collecrting deplpyment metrics"
+        "description": "Change the value to false to opt-out from collecting deployment metrics"
       }
     },
     "appSecret": {
