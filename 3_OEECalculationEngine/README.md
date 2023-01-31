@@ -14,15 +14,7 @@ Goal of this sample is to acceleratre deployment of [Industrial IoT Transparency
 
 
 - Create a [Single SQL Database](https://learn.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart?view=azuresql&tabs=azure-cli)    
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2Fvanaldi%2Findustrial-iot-patterns%2Fmain%2F3_OEECalculationEngine%2Fdeploy%2FsqlDB.json)
-
-- Create a [Single SQL Database](https://learn.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart?view=azuresql&tabs=azure-cli) using the following az cli commands:  
-    1. Create a SQL server:  
-         `az sql server create --name iiotsamplesqlserver  --resource-group iiotsample  --location "West US 2" --admin-user azureuser --admin-password <your password>`  
-    1. Configure the firewall  
-            `az sql server firewall-rule create --resource-group iiosample --server iiotsamplesqlserver -n AllowYourIp --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0`  
-    1. Create the database  
-            `az sql db create --resource-group iiotsample --server iiotsamplesqlserver --name iiotsamplesqldb --sample-name AdventureWorksLT --edition GeneralPurpose  --compute-model Serverless --family Gen5 --capacity 2`
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fvanaldi%2Findustrial-iot-patterns%2Fmain%2F3_OEECalculationEngine%2Fdeploy%2FsqlDB.json)
 
 - Run the [sqldb/mes-reporting.sql](sqldb/mes-reporting.sql) script to create the MES and OEE Reporting tables, along with some sample data
 
