@@ -12,6 +12,10 @@ Goal of this sample is to acceleratre deployment of [Industrial IoT Transparency
 
 ## Setup SQL Database
 
+
+- Create a [Single SQL Database](https://learn.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart?view=azuresql&tabs=azure-cli)    
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2Fvanaldi%2Findustrial-iot-patterns%2Fmain%2F3_OEECalculationEngine%2Fdeploy%2FsqlDB.json)
+
 - Create a [Single SQL Database](https://learn.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart?view=azuresql&tabs=azure-cli) using the following az cli commands:  
     1. Create a SQL server:  
          `az sql server create --name iiotsamplesqlserver  --resource-group iiotsample  --location "West US 2" --admin-user azureuser --admin-password <your password>`  
