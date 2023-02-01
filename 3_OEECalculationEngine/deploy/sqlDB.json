@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "5274826484989534489"
+      "templateHash": "7097333291783315950"
     }
   },
   "parameters": {
@@ -29,7 +29,7 @@
       "type": "bool",
       "defaultValue": true,
       "metadata": {
-        "description": "Change the value to false to opt-out from collecting deployment metrics"
+        "description": "Change the value to false to optout from collecrting deployment metrics"
       }
     },
     "appSecret": {
@@ -38,13 +38,16 @@
   },
   "variables": {
     "startIpAddress": "0.0.0.0",
-    "endIpAddress": "0.0.0.0"
+    "endIpAddress": "0.0.0.0",
+    "resourceType": "sqlserver"
   },
   "resources": [
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "asset-usage-log",
+      "subscriptionId": "21670d02-8dd7-48aa-8fe4-44d8cb9232bb",
+      "resourceGroup": "valeriaassetusage",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -64,7 +67,7 @@
             "value": "[parameters('SqlServerName')]"
           },
           "resourceType": {
-            "value": "SqlServer"
+            "value": "[variables('resourceType')]"
           }
         },
         "template": {
