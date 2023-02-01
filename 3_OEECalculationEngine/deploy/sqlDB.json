@@ -47,7 +47,7 @@
       "apiVersion": "2020-10-01",
       "name": "asset-usage-log",
       "subscriptionId": "21670d02-8dd7-48aa-8fe4-44d8cb9232bb",
-      "resourceGroup": "valeriaassetusage",
+      "resourceGroup": "valeriaToDelete",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
