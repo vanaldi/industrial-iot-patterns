@@ -1,0 +1,132 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.13.1.58284",
+      "templateHash": "16125696510660675904"
+    }
+  },
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "defaultValue": "storage"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "resourceName": {
+      "type": "string"
+    },
+    "resourceType": {
+      "type": "string"
+    },
+    "appSecret": {
+      "type": "secureString"
+    },
+    "AssetUsageLog": {
+      "type": "bool"
+    }
+  },
+  "variables": {
+    "storageAccountName": "[format('{0}{1}', parameters('prefix'), uniqueString(resourceGroup().id))]",
+    "roleAssignmentName": "[guid(resourceGroup().id, 'contributor')]",
+    "contributorRoleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+    "userAssignedIdentityName": "configDeployer",
+    "storageBlobContainerName": "config",
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "appId": "0bfd3e16-224e-4ec3-9b05-10aa61306118",
+    "dcrImmutableId": "dcr-8bb32351b07240dbaa3e0077ef88a6c5",
+    "dceEndpoint": "https://assetusageendpoint-3j0y.westus2-1.ingest.monitor.azure.com"
+  },
+  "resources": [
+    {
+      "condition": "[parameters('AssetUsageLog')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "kind": "StorageV2",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "properties": {
+        "encryption": {
+          "services": {
+            "blob": {
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "supportsHttpsTrafficOnly": true
+      }
+    },
+    {
+      "condition": "[parameters('AssetUsageLog')]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('AssetUsageLog')]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/default/{1}', variables('storageAccountName'), variables('storageBlobContainerName'))]",
+      "properties": {
+        "publicAccess": "Blob"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('AssetUsageLog')]",
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2018-11-30",
+      "name": "[variables('userAssignedIdentityName')]",
+      "location": "[parameters('location')]"
+    },
+    {
+      "condition": "[parameters('AssetUsageLog')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-10-01-preview",
+      "name": "[variables('roleAssignmentName')]",
+      "properties": {
+        "roleDefinitionId": "[variables('contributorRoleDefinitionId')]",
+        "principalId": "[if(parameters('AssetUsageLog'), reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentityName')), '2015-08-31-preview').principalId, null())]",
+        "principalType": "ServicePrincipal"
+      }
+    },
+    {
+      "condition": "[parameters('AssetUsageLog')]",
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "AssetUsageScript",
+      "kind": "AzurePowerShell",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentityName')))]": {}
+        }
+      },
+      "properties": {
+        "azPowerShellVersion": "3.0",
+        "arguments": "[format('{0} {1} {2} {3} {4} {5} {6}', variables('tenantId'), variables('appId'), parameters('appSecret'), variables('dcrImmutableId'), variables('dceEndpoint'), parameters('resourceType'), parameters('resourceName'))]",
+        "primaryScriptUri": "https://raw.githubusercontent.com/vanaldi/testAssetUsage/main/AssetUsageLogs.ps1",
+        "retentionInterval": "P1D"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', split(format('{0}/default/{1}', variables('storageAccountName'), variables('storageBlobContainerName')), '/')[0], split(format('{0}/default/{1}', variables('storageAccountName'), variables('storageBlobContainerName')), '/')[1], split(format('{0}/default/{1}', variables('storageAccountName'), variables('storageBlobContainerName')), '/')[2])]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentityName'))]",
+        "[resourceId('Microsoft.Authorization/roleAssignments', variables('roleAssignmentName'))]"
+      ]
+    }
+  ]
+}
